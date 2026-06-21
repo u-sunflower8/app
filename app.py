@@ -20,7 +20,7 @@ with st.form("add_todo"):
     due = st.date_input("期限")
     submit = st.form_submit_button("追加")
     if submit:
-        sheet.append_row([title, str(due), "未"])
+        sheet.append_row([title, str(due), "未着手"])
         st.success("追加しました！")
         st.rerun() # 画面を更新して追加したデータを表示
 
