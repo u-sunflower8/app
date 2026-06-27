@@ -54,3 +54,19 @@ if todos:
     st.table(todos)
 else:
     st.write("タスクはありません。")
+
+# --- Discord通知用の関数 ---
+def send_discord_notification(message):
+    url = st.secrets["DISCORD_WEBHOOK_URL"]
+    payload = {"content": message} # Discordは "content" というキーで送ります
+    requests.post(url, json=payload)
+
+# --- 登録時の処理 ---
+if submit:
+    sheet.append_row([title, str(due), "未", priority, category])
+    
+    # 呼び出しをDiscord用に変更
+    send_discord_notification(f"📝 新しいタスク: {title} ({category})")
+    
+    st.success("追加しました！")
+    st.rerun()
