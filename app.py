@@ -43,9 +43,6 @@ if selected_cat == "すべて":
 else:
     filtered_todos = [t for t in all_todos if t["カテゴリ"] == selected_cat]
 
-# 4. 表を表示（filtered_todos を表示するように変更）
-st.subheader("現在のタスク")
-st.table(filtered_todos)
 
 # 2. 一覧表示
 st.subheader("現在のタスク")
