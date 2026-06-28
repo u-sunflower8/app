@@ -18,7 +18,7 @@ def send_discord_notification(message):
     url = st.secrets["DISCORD"]["WEBHOOK_URL"]
     requests.post(url, json={"content": message})
 
-st.title("🚀 最強のToDoアプリ")
+st.title("最強のToDoアプリ")
 
 # --- タスク入力 ---
 with st.form("todo_input"):
@@ -31,21 +31,22 @@ with st.form("todo_input"):
         sheet.append_row([new_task, str(new_date), "未着手", priority, category])
         st.rerun()
 
-# 3. データ取得 (列名を気にせず読み込む)
+# 3. データ取得
 data = sheet.get_all_values()
 if len(data) > 1:
-    # ヘッダーを使わず、リストの番号(0,1,2,3,4)でデータを管理
     df = pd.DataFrame(data[1:], columns=['タスク名', '期限', '完了フラグ', '優先度', 'カテゴリ'])
     
-    # 完了フラグが「完了」以外のものだけ抽出
-   df = df[df['完了フラグ'] != '完了']
+    # 完了ではないものを抽出
+    df = df[df['完了フラグ'] != '完了']
     
     # 並び替え
     priority_map = {"高": 1, "中": 2, "低": 3}
     df['p_num'] = df['優先度'].map(priority_map)
     df = df.sort_values(by=['p_num', '期限'])
     
-    st.subheader("📊 未完了タスク一覧")
-    st.table(df[['タスク名', '期限', '優先度', 'カテゴリ']])
-else:
-    st.write("タスクがありません")
+    # 5. 一覧表示
+    st.subheader("進行中・未着手タスク一覧")
+    if not df.empty:
+        st.table(df[['タスク名', '期限', '完了フラグ', '優先度', 'カテゴリ']])
+    else:
+        st.write("表示できるタスクはありません。")
