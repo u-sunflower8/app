@@ -29,18 +29,18 @@ def check_deadlines(todos):
             due_str = values[1]
             due_date = datetime.datetime.strptime(due_str, '%Y-%m-%d').date()
             if due_date == tomorrow:
-                send_discord_notification(f"⚠️ 期限通知: '{task_name}' が明日({due_date})期限です！")
+                send_discord_notification(f"期限通知: '{task_name}' が明日({due_date})期限です！")
                 found = True
         except:
             continue
     return found
 
 # 3. 画面の作成（ここからが「書くところ」です）
-st.title("🚀 最強のToDoアプリ")
+st.title("最強のToDoアプリ")
 
 # --- タスク入力フォーム ---
 with st.form("todo_input"):
-    st.subheader("📝 新しいタスクを追加")
+    st.subheader("新しいタスクを追加")
     new_task = st.text_input("なにをしますか？")
     new_date = st.date_input("期限日を選んでください")
     submit = st.form_submit_button("スプレッドシートに保存")
@@ -49,7 +49,7 @@ with st.form("todo_input"):
         if new_task:
             # シートに書き込む（1列目:タスク名, 2列目:期限, 3列目:状態）
             sheet.append_row([new_task, str(new_date), "未着手"])
-            send_discord_notification(f"🆕 タスクが追加されました: {new_task} (期限: {new_date})")
+            send_discord_notification(f"タスクが追加されました: {new_task} (期限: {new_date})")
             st.success("追加しました！")
             st.rerun() # 画面を更新
         else:
@@ -64,7 +64,7 @@ else:
     all_todos = []
 
 # サイドバーのボタン
-if st.sidebar.button("⏰ 明日の期限をチェック"):
+if st.sidebar.button("明日の期限をチェック"):
     if all_todos:
         if check_deadlines(all_todos):
             st.sidebar.success("期限が近いタスクをDiscordに通知しました！")
@@ -74,7 +74,7 @@ if st.sidebar.button("⏰ 明日の期限をチェック"):
         st.sidebar.warning("タスクがまだありません。")
 
 # 5. 一覧表示
-st.subheader("📊 現在のタスク一覧")
+st.subheader("現在のタスク一覧")
 if all_todos:
     st.table(all_todos)
 else:
