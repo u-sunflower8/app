@@ -19,11 +19,43 @@ def send_discord_notification(message):
     requests.post(url, json={"content": message})
     
 
-# CSSの注入（ここがベストな場所！）
 st.markdown("""
 <style>
-    /* ここにCSSを書く */
-    .stApp { background-color: #606060; }
+    /* 全体のベースカラーを落ち着いたオフホワイトに */
+    .stApp {
+        background-color: #FAFAFA;
+        color: #333333;
+    }
+
+    /* フォント設定：読みやすく、モダンなゴシック体 */
+    html, body, [class*="css"] {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    /* タイトルとヘッダーを控えめに */
+    h1, h2, h3 {
+        color: #2D2D2D !important;
+        font-weight: 500 !important;
+    }
+
+    /* 入力フォームの角を丸めて柔らかく */
+    div[data-baseweb="base-input"], div[data-baseweb="select"] {
+        border-radius: 8px !important;
+    }
+
+    /* ボタンをシンプルで主張しすぎないデザインに */
+    div.stButton > button {
+        background-color: #E0E0E0 !important;
+        color: #333333 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 400 !important;
+    }
+    
+    /* 選択時の色だけアクセントカラーに（例：落ち着いたブルーグレー） */
+    div.stButton > button:hover {
+        background-color: #BDBDBD !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
