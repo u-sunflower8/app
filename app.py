@@ -33,15 +33,24 @@ def check_deadlines(todos):
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
     found = False
+    
     for todo in todos:
         try:
-            # 辞書から「期限」を取得（もし見つからなければエラーを防ぐ）
-            due_str = todo.get("期限", "")
+            # todo.values() でリスト化して、順番で取り出します
+            # インデックス 0番目 = タスク名
+            # インデックス 1番目 = 期限
+            values = list(todo.values())
+            task_name = values[0]
+            due_str = values[1]
+            
+            # 日付をチェック
             due_date = datetime.datetime.strptime(due_str, '%Y-%m-%d').date()
+            
             if due_date == tomorrow:
-                send_discord_notification(f"⚠️ 期限通知: '{todo.get('タスク名')}' が明日({due_date})期限です！")
+                send_discord_notification(f"⚠️ 期限通知: '{task_name}' が明日({due_date})期限です！")
                 found = True
-        except:
+        except Exception as e:
+            # エラーが起きても無視して次へ進む（空行対策）
             continue
     return found
 
