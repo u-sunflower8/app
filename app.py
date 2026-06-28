@@ -49,14 +49,15 @@ st.markdown("""
         color: #333333 !important;
         border: none !important;
         border-radius: 20px !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         padding: 0.5rem 3rem !important;
         transition: all 0.3s ease !important;
     }
 
     /* ボタンにカーソルを合わせた時の変化 */
     div.stButton > button:hover, div.stFormSubmitButton > button:hover {
-        background-color: #BDBDBD !important;
+        background-color: #333333 !important;
+        color: #f0f0f0 !important;
         border: none !important;
     }
 </style>
