@@ -74,6 +74,6 @@ if st.sidebar.button("明日の期限をチェック"):
         st.sidebar.info("明日が期限のタスクはありません。")
 
 # 5. 一覧表示
-st.subheader("📊 現在のタスク一覧")
+st.subheader("現在のタスク一覧")
 if all_todos:
     st.table(all_todos)
