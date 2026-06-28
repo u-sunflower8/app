@@ -3,7 +3,7 @@ import gspread
 import requests
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 認証設定
+# --- 1. 認証と設定 ---
 creds_dict = st.secrets["GOOGLE_SHEETS"]
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
@@ -11,15 +11,16 @@ client = gspread.authorize(creds)
 SHEET_ID = "101hhNwt1VrR0fn3me63ifsduMqelnVIrY1ozr_Ul74w"
 sheet = client.open_by_key(SHEET_ID).sheet1
 
+# --- 2. Discord通知関数 (診断機能付き) ---
 def send_discord_notification(message):
     url = st.secrets["DISCORD_WEBHOOK_URL"]
-    # データを少し詳細にしてみます
-    payload = {"content": f"【通知】 {message}"}
+    payload = {"content": message}
     response = requests.post(url, json=payload)
-    # 応答コードを確認して、もし失敗ならエラーを出すようにする
-    if response.status_code != 200 and response.status_code != 204:
-        st.error(f"Discordからエラーが返ってきました: {response.status_code}")
+    
+    # 診断用：結果を返す
+    return response.status_code, response.text
 
+# --- 3. アプリのUIと処理 ---
 st.title("ToDoリスト")
 
 # 登録フォーム
@@ -30,27 +31,26 @@ with st.form("add_todo"):
     category = st.selectbox("カテゴリ", ["仕事", "プライベート", "買い物", "その他"])
     submit = st.form_submit_button("追加")
 
+# ボタンが押された時の処理
 if submit:
-        # 1. シート書き込み（成功するまで少し待つイメージ）
-        sheet.append_row([title, str(due), "未", priority, category])
-        
-        # 2. 通知処理を視覚的に落ち着かせる
-        with st.spinner("Discordに通知中..."):
-            try:
-                response = requests.post(url, json={"content": f"📝 {title}"})
-                if response.status_code == 204:
-                    st.success("通知成功！")
-                else:
-                    st.error("通知失敗...")
-            except Exception as e:
-                st.error(f"エラー: {e}")
-        
-        # すぐに画面をリセットして一覧を更新
-        st.rerun()
+    # シートへの書き込み
+    sheet.append_row([title, str(due), "未", priority, category])
+    
+    # Discord通知の実行と診断
+    status, text = send_discord_notification(f"📝 新タスク: {title} ({category})")
+    
+    if status in [200, 204]:
+        st.success("追加完了！Discordにも通知しました。")
+    else:
+        st.error(f"追加は成功しましたが、Discord通知でエラー(コード:{status})が出ました。")
+        st.write(f"詳細: {text}")
+    
+    st.rerun()
 
-# サイドバー絞り込み
+# --- 4. 一覧表示とサイドバー ---
 st.sidebar.header("フィルター")
 all_todos = sheet.get_all_records()
+
 if all_todos:
     categories = ["すべて"] + list(set([t["カテゴリ"] for t in all_todos]))
     selected_cat = st.sidebar.selectbox("カテゴリで絞り込む", categories)
@@ -59,6 +59,8 @@ if all_todos:
         filtered_todos = all_todos
     else:
         filtered_todos = [t for t in all_todos if t["カテゴリ"] == selected_cat]
+    
+    st.subheader("タスク一覧")
     st.table(filtered_todos)
 else:
     st.write("タスクはありません。")
