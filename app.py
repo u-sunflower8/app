@@ -30,19 +30,33 @@ with st.form("add_todo"):
     category = st.selectbox("カテゴリ", ["仕事", "プライベート", "買い物", "その他"])
     submit = st.form_submit_button("追加")
 
-# ここで submit の処理を完結させる
 if submit:
-    # 1. シートへの書き込み
-    sheet.append_row([title, str(due), "未", priority, category])
-    
-    # 2. Discord通知
-    try:
-        send_discord_notification(f"📝 新しいタスク: {title} ({category})")
-        st.success("追加しました！(Discord通知成功)")
-    except Exception as e:
-        st.error(f"Discord通知エラー: {e}")
-    
-    st.rerun()
+        # 1. シート書き込み
+        sheet.append_row([title, str(due), "未", priority, category])
+        
+        # 2. Discord通知を詳細に表示する
+        st.write("Discordへ送信を試みています...")
+        
+        try:
+            url = st.secrets["DISCORD_WEBHOOK_URL"]
+            payload = {"content": f"📝 新タスク: {title}"}
+            
+            # 応答を確認する
+            response = requests.post(url, json=payload)
+            
+            # 結果を表示
+            st.write(f"Discordからの応答コード: {response.status_code}")
+            
+            if response.status_code == 204:
+                st.success("通知がDiscordに送信されました！")
+            else:
+                st.error(f"Discordへの送信で失敗しました。コード: {response.status_code}")
+                st.write(f"詳細: {response.text}")
+                
+        except Exception as e:
+            st.error(f"プログラムの例外エラー: {e}")
+            
+        st.rerun()
 
 # サイドバー絞り込み
 st.sidebar.header("フィルター")
