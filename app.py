@@ -45,7 +45,7 @@ if len(data) > 1:
     df = df.sort_values(by=['p_num', '期限'])
     
 # 5. 一覧表示（st.table から st.dataframe に変更）
-    st.subheader("📊 進行中・未着手タスク一覧")
+    st.subheader("進行中・未着手タスク一覧")
     if not df.empty:
         # use_container_width=True で幅を広げ、hide_index=True で左の列番号を消します
         st.dataframe(
