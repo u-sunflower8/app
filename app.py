@@ -54,12 +54,6 @@ st.markdown("""
         transition: all 0.3s ease !important;
     }
 
-    /* ボタンにカーソルを合わせた時の変化 */
-    div.stButton > button:hover, div.stFormSubmitButton > button:hover {
-        background-color: #f0f0f0 !important;
-        color: #333333 !important;
-        border: none !important;
-    }
 </style>
 """, unsafe_allow_html=True)
 
