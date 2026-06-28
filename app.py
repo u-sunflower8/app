@@ -44,9 +44,14 @@ if len(data) > 1:
     df['p_num'] = df['優先度'].map(priority_map)
     df = df.sort_values(by=['p_num', '期限'])
     
-    # 5. 一覧表示
-    st.subheader("進行中・未着手タスク一覧")
+# 5. 一覧表示（st.table から st.dataframe に変更）
+    st.subheader("📊 進行中・未着手タスク一覧")
     if not df.empty:
-        st.table(df[['タスク名', '期限', '完了フラグ', '優先度', 'カテゴリ']])
+        # use_container_width=True で幅を広げ、hide_index=True で左の列番号を消します
+        st.dataframe(
+            df[['タスク名', '期限', '完了フラグ', '優先度', 'カテゴリ']], 
+            use_container_width=True, 
+            hide_index=True
+        )
     else:
         st.write("表示できるタスクはありません。")
