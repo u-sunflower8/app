@@ -3,13 +3,6 @@ import gspread
 import requests  # ★これが必要！
 from oauth2client.service_account import ServiceAccountCredentials
 
-# ファイルの先頭、import の直後に入れる
-try:
-    import requests
-    st.write("requestsは読み込めています！")
-except ImportError:
-    st.error("requestsが見つかりません！requirements.txtを確認してください。")
-
 # 認証設定
 creds_dict = st.secrets["GOOGLE_SHEETS"]
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -34,14 +27,18 @@ with st.form("add_todo"):
     category = st.selectbox("カテゴリ", ["仕事", "プライベート", "買い物", "その他"])
     submit = st.form_submit_button("追加")
     
-    if submit:
-        # スプレッドシートへ書き込み
+if submit:
+        # 1. シートへの書き込み
         sheet.append_row([title, str(due), "未", priority, category])
-        # Discord通知
-        send_discord_notification(f"📝 新しいタスク: {title} ({category})")
-        st.success("追加しました！")
+        
+        # 2. Discord通知 (try-exceptでエラーを回避して表示)
+        try:
+            send_discord_notification(f"📝 新しいタスク: {title} ({category})")
+            st.success("追加しました！(Discord通知成功)")
+        except Exception as e:
+            st.error(f"Discord通知でエラーが発生しました: {e}")
+        
         st.rerun()
-
 # サイドバー絞り込み
 st.sidebar.header("フィルター")
 all_todos = sheet.get_all_records()
