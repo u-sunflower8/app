@@ -48,6 +48,29 @@ if submit:
     
     st.rerun()
 
+
+import datetime # 一番上のimportに追加してください
+
+# --- 期限チェック関数 ---
+def check_deadlines(todos):
+    today = datetime.date.today()
+    tomorrow = today + datetime.timedelta(days=1)
+    
+    for todo in todos:
+        # スプレッドシートの「期限」が文字列なので日付型に変換
+        # ※スプレッドシートの形式に合わせて yyyy-mm-dd を調整してください
+        due_date = datetime.datetime.strptime(todo["期限"], '%Y-%m-%d').date()
+        
+        if due_date == tomorrow:
+            # 既に通知済みかどうかの管理が必要ですが、まずはシンプルに通知！
+            send_discord_notification(f"⚠️ 期限通知: '{todo['タスク名']}' が明日({due_date})期限です！")
+
+# --- アプリの処理内で実行 ---
+# サイドバーの下や一覧表示の前に以下を置くと、アプリを開くたびにチェックされます
+if st.sidebar.button("期限チェック実行"):
+    check_deadlines(all_todos)
+    st.sidebar.success("チェック完了！")
+
 # --- 4. 一覧表示とサイドバー ---
 st.sidebar.header("フィルター")
 all_todos = sheet.get_all_records()
